@@ -1,8 +1,7 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Quick Dictionary Library
 library quick_dictionary;
 
 export 'src/quick_dictionary_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/quick_dictionary_sound.dart';
+export 'src/quick_dictionary_source.dart';
+export 'src/quick_dictionary_word.dart';

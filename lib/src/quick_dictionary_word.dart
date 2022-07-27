@@ -1,33 +1,48 @@
+import 'dart:collection';
+
+import 'quick_dictionary_base.dart';
 import 'quick_dictionary_sound.dart';
-
-class QuickDictionary {
-  final Language language;
-
-  final QuickDictionarySource source;
-
-  QuickDictionary(this.language, this.source);
-}
-
-class Language {
-  final String name;
-
-  final String code;
-
-  final SoundCodec soundCodec;
-
-  Language(this.name, this.code, this.soundCodec);
-}
 
 class Word {
   final Language language;
 
-  final String word;
+  final String wordText;
 
   final List<Sound> sounds;
 
-  final List<WordDefinition> definitions;
+  final List<WordDefinition> _definitions;
 
-  Word(this.language, this.word, this.sounds, this.definitions);
+  Word(this.language, this.wordText, this.sounds,
+      Iterable<WordDefinition> definitions)
+      : _definitions = definitions.toList();
+
+  Set<WordType> get types => _definitions.map((e) => e.type).toSet();
+
+  List<WordDefinition> get definitions => UnmodifiableListView(_definitions);
+
+  bool addDefinition(WordDefinition definition) {
+    if (!_definitions.contains(definition)) {
+      _definitions.add(definition);
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Word &&
+          runtimeType == other.runtimeType &&
+          language == other.language &&
+          wordText == other.wordText;
+
+  @override
+  int get hashCode => language.hashCode ^ wordText.hashCode;
+
+  @override
+  String toString() {
+    return 'Word<$wordText>{language: ${language.code}, types: ${types.map((e) => e.name).toList()}, sounds: ${sounds.join('_')}}';
+  }
 }
 
 enum WordType {
@@ -43,15 +58,28 @@ enum WordType {
 }
 
 class WordDefinition {
+  final String wordText;
+
   final WordType type;
 
   final String description;
 
-  WordDefinition(this.type, this.description);
-}
+  WordDefinition(this.wordText, this.type, this.description);
 
-abstract class QuickDictionarySource {
-  Word? findByWord(String word);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WordDefinition &&
+          runtimeType == other.runtimeType &&
+          wordText == other.wordText &&
+          type == other.type &&
+          description == other.description;
 
-  Word? findBySounds(List<Sound> sounds);
+  @override
+  int get hashCode => wordText.hashCode ^ type.hashCode ^ description.hashCode;
+
+  @override
+  String toString() {
+    return 'WordDefinition<$wordText>{type: ${type.name}, description: $description}';
+  }
 }

@@ -1,69 +1,69 @@
-import 'package:collection/collection.dart';
+import 'quick_dictionary_utils.dart';
 
-class QuickDictionary {
-  final Language language;
+class Sound {
+  final String phonetic;
 
-  final QuickDictionarySource source;
+  Sound(this.phonetic);
 
-  QuickDictionary(this.language, this.source);
-}
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Sound &&
+          runtimeType == other.runtimeType &&
+          phonetic == other.phonetic;
 
-class Language {
-  final String name;
+  @override
+  int get hashCode => phonetic.hashCode;
 
-  final String code;
-
-  final SoundCodec soundCodec;
-
-  Language(this.name, this.code, this.soundCodec);
+  @override
+  String toString() {
+    return phonetic;
+  }
 }
 
 abstract class SoundCodec {
-  List<Sound> encode(String word);
+  final String name;
+
+  SoundCodec(this.name);
+
+  List<Sound> encode(String wordText);
 
   String decode(List<Sound> sounds);
 }
 
-class Word {
-  final Language language;
+class SoundCodecLatin extends SoundCodec {
+  SoundCodecLatin() : super('latin');
 
-  final String word;
+  @override
+  String decode(List<Sound> sounds) => sounds.join();
 
-  final List<Sound> sounds;
+  @override
+  List<Sound> encode(String wordText) {
+    wordText = StringUtils.simplify(wordText);
 
-  final List<WordDefinition> definitions;
+    var parts = <String>[];
 
-  Word(this.language, this.word, this.sounds, this.definitions);
-}
+    wordText.splitMapJoin(RegExp(r'([^aeiyou]+)([aeiyou]+)'), onMatch: (m) {
+      var s = m[0]!;
+      s = StringUtils.removeRepeatedLetters(s);
+      if (s.isNotEmpty) {
+        parts.add(s);
+      }
+      return '';
+    }, onNonMatch: (s) {
+      s = StringUtils.removeRepeatedLetters(s);
+      if (s.isNotEmpty) {
+        parts.add(s);
+      }
+      return '';
+    });
 
-enum WordType {
-  article,
-  preposition,
-  pronoun,
-  adverb,
-  interjection,
-  adjective,
-  noun,
-  verb,
-  unknown
-}
+    var sounds = parts.map((e) => Sound(e)).toList();
+    return sounds;
+  }
 
-class WordDefinition {
-  final WordType type;
-
-  final String description;
-
-  WordDefinition(this.type, this.description);
-}
-
-class Sound {
-  final String phonetic ;
-
-  Sound(this.phonetic);
-}
-
-abstract class QuickDictionarySource {
-  Word? findByWord(String word);
-
-  Word? findBySounds(List<Sound> sounds);
+  @override
+  String toString() {
+    return 'SoundCodecLatin{$name}';
+  }
 }

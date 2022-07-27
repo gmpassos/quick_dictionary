@@ -1,32 +1,77 @@
 import 'package:quick_dictionary/quick_dictionary.dart';
 
 void main() {
-  var m = MapHistory<int, String>();
+  var language = Language('English Intl.', 'en', SoundCodecLatin());
 
-  m[1] = 'a';
-  m[2] = 'b';
-  m[3] = 'c';
+  print('$language\n');
 
-  var ver3 = m.version;
+  var dictionaryDB = QuickDictionaryDataBaseMemory(language);
 
-  print('Version: $ver3 >> $m');
+  dictionaryDB.addWordDefinition(WordDefinition('the', WordType.article,
+      'used before nouns to refer to particular things or people.'));
 
-  m[2] = 'B';
-  m.remove(3);
+  dictionaryDB.addWordDefinition(WordDefinition('cat', WordType.noun,
+      'a small animal with fur, four legs, a tail, and claws, usually kept as a pet.'));
 
-  var ver5 = m.version;
-  print('Version: $ver5 >> $m');
+  dictionaryDB.addWordDefinition(WordDefinition('caught', WordType.verb,
+      'the past tense and past participle of catch verb.'));
 
-  print('Rollback to version: $ver3');
-  m.rollback(ver3);
+  dictionaryDB.addWordDefinition(WordDefinition('orange', WordType.adjective,
+      'a round sweet fruit that has a thick orange skin and an orange centre.'));
 
-  print('Version: ${m.version} >> $m');
+  dictionaryDB.addWordDefinition(WordDefinition('mouse', WordType.noun,
+      'a small mammal with short fur, a pointed face, and a long tail.'));
+
+  var wordCat = dictionaryDB.findByWordText('cat');
+  _showWord(wordCat);
+
+  var wordCatTypo = dictionaryDB.findByWordTextSounds('caatt');
+  _showWord(wordCatTypo);
+
+  print('--------------------------------------------------------------');
+
+  for (var wordText in dictionaryDB.wordsTexts) {
+    var word = dictionaryDB.findByWordText(wordText)!;
+    _showWord(word);
+  }
+}
+
+void _showWord(Word? word) {
+  if (word == null) return;
+
+  print(word);
+
+  for (var d in word.definitions) {
+    print('-- $d');
+  }
+
+  print('');
 }
 
 /////////////////////////////
 // OUTPUT:
 /////////////////////////////
-// Version: 3 >> {1: a, 2: b, 3: c}
-// Version: 5 >> {1: a, 2: B}
-// Rollback to version: 3
-// Version: 3 >> {1: a, 2: b, 3: c}
+// Language{name: English Intl., code: en, soundCodec: SoundCodecLatin{latin}}
+//
+// Word<cat>{language: en, types: [noun], sounds: ca_t}
+// -- WordDefinition<cat>{type: noun, description: a small animal with fur, four legs, a tail, and claws, usually kept as a pet.}
+//
+// Word<cat>{language: en, types: [noun], sounds: ca_t}
+// -- WordDefinition<cat>{type: noun, description: a small animal with fur, four legs, a tail, and claws, usually kept as a pet.}
+//
+// --------------------------------------------------------------
+// Word<the>{language: en, types: [article], sounds: the}
+// -- WordDefinition<the>{type: article, description: used before nouns to refer to particular things or people.}
+//
+// Word<cat>{language: en, types: [noun], sounds: ca_t}
+// -- WordDefinition<cat>{type: noun, description: a small animal with fur, four legs, a tail, and claws, usually kept as a pet.}
+//
+// Word<caught>{language: en, types: [verb], sounds: cau_ght}
+// -- WordDefinition<caught>{type: verb, description: the past tense and past participle of catch verb.}
+//
+// Word<orange>{language: en, types: [adjective], sounds: o_ra_nge}
+// -- WordDefinition<orange>{type: adjective, description: a round sweet fruit that has a thick orange skin and an orange centre.}
+//
+// Word<mouse>{language: en, types: [noun], sounds: mou_se}
+// -- WordDefinition<mouse>{type: noun, description: a small mammal with short fur, a pointed face, and a long tail.}
+//
