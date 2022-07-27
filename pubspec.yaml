@@ -7,7 +7,7 @@ environment:
   sdk: '>=2.16.0 <3.0.0'
 
 dependencies:
-   collection: ^1.16.0
+   #collection: ^1.16.0
    dependency_validator: ^3.2.0
    diacritic: ^0.1.3
 
