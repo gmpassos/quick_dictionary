@@ -1,0 +1,15 @@
+name: quick_dictionary
+description: A simple and easy-to-use dictionary to be embedded anywhere.
+version: 1.0.0
+homepage: https://github.com/gmpassos/quick_dictionary
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+   collection: ^1.16.0
+   dependency_validator: ^3.2.0
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.16.0
